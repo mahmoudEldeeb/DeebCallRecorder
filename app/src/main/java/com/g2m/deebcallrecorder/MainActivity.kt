@@ -1,5 +1,6 @@
 package com.g2m.deebcallrecorder
 
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -13,6 +14,11 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -35,7 +41,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
-        Log.v("aaa", this.getExternalFilesDir(null)?.absolutePath)
+        //Log.v("aaa", this.getExternalFilesDir(null)?.absolutePath)
+var d=Date()
+        val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+        val currentDate = sdf.format(Date())
+        Log.v("aaaaaaa",currentDate)
+
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+             val parsedDate =  LocalDateTime.parse(d.time.toString(), DateTimeFormatter.ISO_DATE_TIME)
+            val formattedDate = parsedDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
+                Log.v("aaa",formattedDate)
+        } else {
+             val parser =  SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+             val formatter = SimpleDateFormat("dd.MM.yyyy HH:mm")
+             val formattedDate = formatter.format(parser.parse(d.time.toString()))
+             Log.v("aaaaa",formattedDate)
+
+         }
 
         navView.setNavigationItemSelectedListener(this)
     }

@@ -1,6 +1,13 @@
 package com.g2m.deebcallrecorder.utils
 
+import android.content.Context
+
 public object Constants {
+
+
+    var DATABASE_NAME="deebcallrecorder_databse"
+    var context: Context? = null
+
 
     var DEBUG = true
     var isAds = false
