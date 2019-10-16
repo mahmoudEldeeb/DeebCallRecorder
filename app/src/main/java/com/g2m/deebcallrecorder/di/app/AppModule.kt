@@ -10,7 +10,9 @@ import javax.inject.Singleton
 
 
 @Module
-public class AppModule {
+ class AppModule {
+
+
 
     @Singleton
     @Provides
@@ -21,13 +23,14 @@ public class AppModule {
 
     @Singleton
     @Provides
-    internal fun provideLocalDatabse(): LocalDatabse? {
-        var db: LocalDatabse? =null
-            return db?.getDatabase()
+    internal fun provideLocalDatabse(application: Application): LocalDatabse {
+            return LocalDatabse.getDatabase(application)
+
     }
+
     @Singleton
     @Provides
-    internal fun provideDataDao(localDatabse: LocalDatabse): DataDao? {
+    internal fun provideDataDao(localDatabse: LocalDatabse): DataDao {
         return localDatabse.getDao()
     }
 

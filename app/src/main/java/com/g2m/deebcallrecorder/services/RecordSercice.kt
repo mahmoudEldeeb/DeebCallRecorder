@@ -1,23 +1,26 @@
 package com.g2m.deebcallrecorder.services
 
+import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
-import android.icu.text.DateFormat
-import android.icu.text.SimpleDateFormat
 import android.media.MediaRecorder
 import android.os.Build
-import android.os.Environment
 import android.os.IBinder
-import android.os.Environment.getExternalStorageDirectory
-import android.provider.MediaStore
 import android.util.Log
 import androidx.annotation.RequiresApi
+import com.g2m.deebcallrecorder.models.dataModels.AudioModel
+import com.g2m.deebcallrecorder.models.repositries.SaveAudioRepositry
+import dagger.android.DaggerService
+import io.reactivex.SingleObserver
+import io.reactivex.disposables.Disposable
 import java.io.File
 import java.util.*
+import javax.inject.Inject
 
 
-class RecordSercice : Service() {
-
+class RecordSercice : DaggerService() {
+    @set:Inject
+    lateinit var audioRepositry: SaveAudioRepositry
     object recordeing{
         var isRecorder:Boolean =false
         val mediarecoder=MediaRecorder()
@@ -29,10 +32,13 @@ class RecordSercice : Service() {
         TODO("Return the communication channel to the service.")
     }
 
+    @SuppressLint("CheckResult")
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
            // mFileName = MyFileManager.getFilename(this,mPhoneNumber, mStatusCall);
+
+
         if(recordeing.isRecorder){
            stopRecord()
         }
@@ -44,6 +50,14 @@ class RecordSercice : Service() {
 
     private fun stopRecord() {
         recordeing.mediarecoder.stop()
+        var audioModel=AudioModel()
+        audioModel.name="Unknowen"
+        audioModel.date=recordeing.date
+        audioModel.path=recordeing.mPath
+        Log.v("dddd","services ")
+
+        audioRepositry.saveAudio(audioModel)
+
         recordeing.isRecorder=false
         recordeing.mPath=""
         recordeing.date=""

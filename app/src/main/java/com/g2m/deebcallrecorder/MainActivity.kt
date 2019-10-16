@@ -1,5 +1,7 @@
 package com.g2m.deebcallrecorder
 
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -14,13 +16,19 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
+import androidx.navigation.ui.NavigationUI
+import com.g2m.deebcallrecorder.services.RecordSercice
+import com.g2m.deebcallrecorder.utils.Constants
+import dagger.android.support.DaggerAppCompatActivity
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,23 +49,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
+            val navController:NavController=Navigation.findNavController(this, R.id.fragment)
+        NavigationUI.setupWithNavController(navView, navController)
+
+
+
+
+
         //Log.v("aaa", this.getExternalFilesDir(null)?.absolutePath)
 var d=Date()
         val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
         val currentDate = sdf.format(Date())
         Log.v("aaaaaaa",currentDate)
+       // startRecorderService(this, Constants.OUTGOING_CALL_STARTED)
 
-         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-             val parsedDate =  LocalDateTime.parse(d.time.toString(), DateTimeFormatter.ISO_DATE_TIME)
-            val formattedDate = parsedDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
-                Log.v("aaa",formattedDate)
-        } else {
-             val parser =  SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-             val formatter = SimpleDateFormat("dd.MM.yyyy HH:mm")
-             val formattedDate = formatter.format(parser.parse(d.time.toString()))
-             Log.v("aaaaa",formattedDate)
 
-         }
 
         navView.setNavigationItemSelectedListener(this)
     }
@@ -70,7 +76,15 @@ var d=Date()
             super.onBackPressed()
         }
     }
+    private fun startRecorderService(
+        context: Context, stateCall: Int)
+    {
+        val myIntent = Intent(context, RecordSercice::class.java)
+        myIntent.putExtra(Constants.COMMAND_TYPE, stateCall)
+        myIntent.putExtra(Constants.PHONE_NUMBER, "unknown")
+        context.startService(myIntent)
 
+    }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
@@ -90,24 +104,6 @@ var d=Date()
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
-            R.id.nav_home -> {
-                // Handle the camera action
-            }
-            R.id.nav_gallery -> {
-
-            }
-            R.id.nav_slideshow -> {
-
-            }
-            R.id.nav_tools -> {
-
-            }
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
-
-            }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
